@@ -1,0 +1,24 @@
+version: "3"
+
+services: 
+   # yealink:      
+   #    build: 
+   #       context: .
+   #       dockerfile: Dockerfile
+   #    image: "yealink:1.0"
+   #    container_name: yealinkrps      
+   #    entrypoint: ["tail", "-f", "/dev/null"]
+   #    volumes:
+   #       - /root/Dockers/Yealink:/home/app
+   php:
+      image: php:8.1.10-cli
+      container_name: yealinkrps
+      command: ["tail", "-f", "/dev/null"]
+      volumes:
+         - /root/Dockers/Yealink:/usr/src/myapp
+   composer:
+      image: composer:2.4.1
+      container_name: composer
+      command: ["composer", "install"]
+      volumes:
+         - /root/Dockers/Yealink:/app
