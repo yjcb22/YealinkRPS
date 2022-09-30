@@ -22,7 +22,7 @@ class YealinkRps
     }
     /**
      * Send and HTTP POST request to retrieve the details from a device based on the mac
-     * It will return the device ID on the Yealink system so that you can perform actions
+     * It will return the device ID on the Yealink system so that you can perform actions.
      * @param string $mac Phone MAC address
      * @return void
      */
