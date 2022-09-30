@@ -1,6 +1,5 @@
 <?php
 namespace Models;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
@@ -9,19 +8,32 @@ use GuzzleHttp\Psr7;
 
 class YealinkRps
 {
-        
+     /**
+     * Constructor of the calls
+     *
+     * @param string $accessKey API access key
+     * @param string $secretKey API secret key
+     * @return void
+     */         
     function __construct(string $accessKey, string $secretKey)
     {
         $this->accessKey = $accessKey;
         $this->secretKey = $secretKey;
     }
-
-    function getDeviceDetail($mac)
+    /**
+     * Send and HTTP POST request to retrieve the details from a device based on the mac
+     * It will return the device ID on the Yealink system so that you can perform actions
+     * @param string $mac Phone MAC address
+     * @return void
+     */
+    function getDeviceDetail(string $mac): void
     {
         $url = self::BASE_URL . self::INFO_LOCATION;
+        //Get the timestamp in unix time with milliseconds. You need to drop the last digit
         $timeStamp = substr(implode(explode(".", strval(microtime(true)))), 0, -1);
         $nonce = uniqid();
-
+        //You need to get the MD5 of the HTTP body bites as par of the signature before sending the request
+        //Consequently, you need to create a Guzzle Request and then send it
         $bodyArray = [
             "key" => $mac,
             "status" => "bound",
@@ -31,6 +43,7 @@ class YealinkRps
         ];
         $body = json_encode($bodyArray);
         $bodyStream = Psr7\Utils::streamFor($body);
+        //You need true in the hash function so it will return the bytes instead of an string
         $contentMd5 = base64_encode(hash("md5", $bodyStream, true));
         $headerString = $this->createHeaderString($this->accessKey, $nonce, $timeStamp, $contentMd5);
         $urlForSign = substr(self::INFO_LOCATION, 1);
@@ -57,8 +70,12 @@ class YealinkRps
         //$request->getBody()->read(1);
 
     }
-
-    function checkDeviceExists($mac)
+    /**
+     * Send an HTTP GET request to check if a MAC address exists in the Yealink RPS
+     * @param string $mac
+     * @return void
+     */
+    function checkDeviceExists(string $mac): void
     {
         $parameter = "?mac=" . $mac;
         $url = self::BASE_URL . self::EXISTS_LOCATION . $parameter;
@@ -87,13 +104,26 @@ class YealinkRps
             echo $e->getMessage();
         }
     }
-
-    function createSignature($strToSign)
+    /**
+     * Return the signature encoding in Base64
+     *
+     * @param string $strToSign
+     * @return string
+     */
+    function createSignature(string $strToSign): string
     {
         return base64_encode(hash_hmac("sha256", $strToSign, $this->secretKey, TRUE));
     }
-
-    function createStrToSign($httpMethod, $headers, $apiUri, $parameters = NULL)
+    /**
+     * Receives the parameters and then returns a single string with all the values to pass it
+     * to the signature method
+     * @param string $httpMethod
+     * @param string $headers
+     * @param string $apiUri
+     * @param string $parameters
+     * @return string
+     */
+    function createStrToSign(string $httpMethod, string $headers, string $apiUri, string $parameters = NULL): string
     {
         $strToSign = "";
         if (is_null($parameters)) {
@@ -107,8 +137,16 @@ class YealinkRps
 
         return $strToSign;
     }
-
-    function createHeaderString($accessKey, $nonce, $timeStamp, $contentMd5 = NULL)
+    /**
+     * Create part of the string used for sigining. It will contain the headers used in the HTTP request
+     *
+     * @param string $accessKey
+     * @param string $nonce
+     * @param string $timeStamp
+     * @param string $contentMd5
+     * @return string
+     */
+    function createHeaderString(string $accessKey, string $nonce, string $timeStamp, string $contentMd5 = NULL): string
     {
         $headers = "";
         if (is_null($contentMd5)) {
@@ -124,7 +162,7 @@ class YealinkRps
         return $headers;
     }
 
-    function createParameterString($parameters)
+    function createParameterString(array $parameters): string
     {
         $parameterString = "";
         foreach ($parameters as $key => $value) {
