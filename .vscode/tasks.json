@@ -6,7 +6,7 @@
         {
             "label": "php",
             "type": "shell",
-            "command": "./php /usr/src/myapp/YealinkRps.php"
+            "command": "./php /usr/src/myapp/run.php"
         }
     ]
 }

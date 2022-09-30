@@ -1,15 +1,16 @@
 <?php
-
+namespace Models;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7;
 
-require 'vendor/autoload.php';
+
 class YealinkRps
 {
         
-    function __construct(string $accessKey, string $secretKey): void
+    function __construct(string $accessKey, string $secretKey)
     {
         $this->accessKey = $accessKey;
         $this->secretKey = $secretKey;
@@ -49,7 +50,7 @@ class YealinkRps
         try {
             $response = $client->send($request);
             echo $response->getBody()->getContents();
-        } catch (RuntimeException $e) {
+        } catch (TransferException $e) {
             echo "Houston! We got the following error: " . "\n" . $e->getMessage();
         }
         //$response = $client->send($request, ['timeout' => 2]);
@@ -82,8 +83,8 @@ class YealinkRps
                 ]
             ]);
             echo json_encode(json_decode($res->getBody()->getContents()), JSON_PRETTY_PRINT);
-        } catch (RequestException $e) {
-            echo $e->getResponse();
+        } catch (TransferException $e) {
+            echo $e->getMessage();
         }
     }
 
@@ -137,12 +138,12 @@ class YealinkRps
     private $secretKey;
 
     //Constant
-    const BASE_URL = "https://api-dm.yealink.com:8443";
-    #const BASE_URL = "http://172.16.0.1";
+    #const BASE_URL = "https://api-dm.yealink.com:8443";
+    const BASE_URL = "http://www.google.com";
     const EXISTS_LOCATION = "/api/open/v1/device/checkMac";
     const INFO_LOCATION = "/api/open/v1/device/list";
 }
 
-$rps = new YealinkRps(accessKey: "access", secretKey: "key");
-#$rps->getDeviceDetail("805e0c75c111");
-$rps->checkDeviceExists("805e0c75c111");
+// $rps = new YealinkRps(accessKey: "access", secretKey: "key");
+// $rps->getDeviceDetail("805e0c75c111");
+#$rps->checkDeviceExists("805e0c75c111");

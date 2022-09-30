@@ -15,10 +15,10 @@ services:
       container_name: yealinkrps
       command: ["tail", "-f", "/dev/null"]
       volumes:
-         - /root/Dockers/Yealink:/usr/src/myapp
+         - ../:/usr/src/myapp
    composer:
       image: composer:2.4.1
       container_name: composer
       command: ["composer", "install"]
       volumes:
-         - /root/Dockers/Yealink:/app
+         - ../:/app
