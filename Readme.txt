@@ -4,5 +4,4 @@
 //https://automationadmin.com/2019/10/yealink-rest-api
 //https://docs.guzzlephp.org/en/stable/
 //tcpdump -nvvvi ens18 port 80 and dst 172.16.0.1
-//tcpdump -nvvvXi ens18 port 80 dst 172.16.0.1 (show the packe content/payload)
-   
+//tcpdump -nvvvXi ens18 port 80 dst 172.16.0.1 (show the packe content/payload)  
